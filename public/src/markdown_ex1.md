@@ -1,0 +1,48 @@
+# An h1 header
+
+Paragraphs are separated by a blank line.
+
+2nd paragraph. *Italic*, **bold**, and `monospace`. Itemized lists
+look like:
+
+  * this one
+  * that one
+  * the other one
+
+Note that --- not considering the asterisk --- the actual text
+content starts at 4-columns in.
+
+> Block quotes are
+> written like so.
+>
+> They can span multiple paragraphs,
+> if you like.
+
+Use 3 dashes for an em-dash. Use 2 dashes for ranges (ex., "it's all
+in chapters 12--14"). Three dots ... will be converted to an ellipsis.
+Unicode is supported. ☺
+
+
+
+## An h2 header
+
+
+Here's a numbered list:
+
+ 1. first item
+ 2. second item
+ 3. third item
+
+Here's a code block:
+
+```
+for i in range(10):
+    print(i)
+```
+
+Here's a link to the [boot dev website](https://boot.dev)
+
+Here's an image ![image](https://i.imgur.com/zjjcJKZ.png)
+
+And that is all for what I have supported so far.
+

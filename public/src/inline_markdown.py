@@ -5,6 +5,7 @@ from textnode import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    """Split text nodes with inline bold, italic, code sections"""
     new_nodes = []
     for old_node in old_nodes:
         if old_node.text_type != TextType.TEXT:
@@ -189,6 +190,7 @@ def split_nodes_link(old_nodes):
 
 
 def text_to_textnodes(text):
+    """Creates text nodes for bold, italic, code, links, images"""
     text_node = TextNode(text, TextType.TEXT)
     new_nodes = split_nodes_delimiter([text_node], "**", TextType.BOLD)
     new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC)
@@ -199,6 +201,7 @@ def text_to_textnodes(text):
 
 
 def markdown_to_blocks(markdown):
+    """Returns markdown sections"""
     markdown_blocks = []
     for block in markdown.split("\n\n"):
         if block == "":
@@ -208,6 +211,7 @@ def markdown_to_blocks(markdown):
 
 
 def block_to_block_type(block: str):
+    """Return the type of block contained in the block-string"""
     lines = block.split("\n")
     # Headings start with 1-6 # characters, followed by a space, then the heading text
     if re.match(r"^#+\s", block):
@@ -224,21 +228,46 @@ def block_to_block_type(block: str):
     # every line in an unordered list block must start with a * or - character followed by a space
     elif re.match(r"[*-]\s", block):
         for idx, line in enumerate(lines):
-            if not re.match(r"[*-]\s", lines[idx]):
+            if not re.match(r"[*-]\s", lines[idx].strip()):
                 return "paragraph"
         return "unordered_list"
     # Every line in an ordered list block must start with a number followed by a . character and a space
     elif re.match(r"\d+\.\s", block):
         for idx, line in enumerate(lines):
-            if not re.match(r"\d+\.\s", lines[idx]):
+            if not re.match(r"\d+\.\s", lines[idx].strip()):
                 return "paragraph"
         return "ordered_list"
     # If non of the above then it is a normal paragraph
     else:
         return "paragraph"
 
+def markdown_to_html_node(markdown):
+    # split markdown into blocks, using markdown_to_block()
+    markdown_blocks = markdown_to_blocks(markdown)
+    for block in markdown_blocks:
+        # detm'n type of block
+        block_type = block_to_block_type(block)
+        print(f"{block_type} -- {block}\n")
+        # create HTMLNode per block type
+        # turn paragraphs for links, images, bold, italic to nodes
+        if block_type == "paragraph":
+            nodes = text_to_textnodes(block)
+        # - assign proper child HTMLNode objects to block node
+        # - text_to_children(text) function for any block type; takes string of text and returns list of HTMLNodes (incorporate TextNode -> HTMLNode)
+        # - make all block nodes children under a single parent HTML node (div) and return it
+
+    # quote block tags <blockquote>
+    # unordered list tags <ul>, each list item tagged with <li>
+    # ordered list tags <ol>, each list item tagged with <li>
+    # code blocks surrounded by <code> tag nested inside a <pre> tag
+    # headings surrounded by <h1> <h6> tag w.r.t num of #
+    # paragraphs should use <p> tag
+    return None
+
 
 if __name__ == "__main__":
-    code_block = "```\nx = 'Hello World\nprint(x)\n```"
-    value = block_to_block_type(code_block)
-    print(value)
+    markdown_filepath = "/Users/rh896946/software_learning/boot-dev/static_site_generator_project/static_site_generator/public/src/markdown_ex1.md"
+    markdown_file = ""
+    with open(markdown_filepath) as f:
+        markdown_file = f.read()
+    markdown_to_html_node(markdown_file)
