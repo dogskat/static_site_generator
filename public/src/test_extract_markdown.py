@@ -9,6 +9,7 @@ from inline_markdown import (
     split_nodes_link,
     text_to_textnodes,
     markdown_to_blocks,
+    block_to_block_type,
 )
 
 markdown_text = \
@@ -286,6 +287,58 @@ This is the same paragraph on a new line
                 "* This is a list\n* with items",
             ],
         )
+
+    def test_heading_block_type(self):
+        h1 = "# Heading level 1"
+        h6 = "###### Heading level 6"
+        value = block_to_block_type(h1)
+        self.assertEqual("heading", value)
+        value = block_to_block_type(h6)
+        self.assertEqual("heading", value)
+
+    def test_code_block_type(self):
+        code_block = "```\nx = 'Hello World\nprint(x)\n```"
+        value = block_to_block_type(code_block)
+        self.assertEqual("code", value)
+
+    def test_line_quote_block_type(self):
+        blockquote = "> Dorothy followed her through many rooms"
+        value = block_to_block_type(blockquote)
+        self.assertEqual("quote", value)
+
+    def test_unordered_list_block_type(self):
+        unordered_list = "* list item\n* item2\n* item3"
+        value = block_to_block_type(unordered_list)
+        self.assertEqual("unordered_list", value)
+
+        unordered_list = "- list item\n- item2\n- item3"
+        value = block_to_block_type(unordered_list)
+        self.assertEqual("unordered_list", value)
+
+    def test_ordered_list_block_type(self):
+        ordered_list = "1. First item\n2. Second item\n3. Third item"
+        value = block_to_block_type(ordered_list)
+        self.assertEqual("ordered_list", value)
+
+    def test_paragraph_block_type(self):
+        paragraph = "Some line of text"
+        value = block_to_block_type(paragraph)
+        self.assertEqual("paragraph", value)
+
+    def test_block_to_block_types(self):
+        block = "# heading"
+        self.assertEqual(block_to_block_type(block), "heading")
+        block = "```\ncode\n```"
+        self.assertEqual(block_to_block_type(block), "code")
+        block = "> quote\n> more quote"
+        self.assertEqual(block_to_block_type(block), "quote")
+        block = "* list\n* items"
+        self.assertEqual(block_to_block_type(block), "unordered_list")
+        block = "1. list\n2. items"
+        self.assertEqual(block_to_block_type(block), "ordered_list")
+        block = "paragraph"
+        self.assertEqual(block_to_block_type(block), "paragraph")
+
 
 if __name__ == "__main__":
     unittest.main()

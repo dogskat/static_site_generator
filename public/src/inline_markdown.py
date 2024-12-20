@@ -206,21 +206,39 @@ def markdown_to_blocks(markdown):
         markdown_blocks.append(block.strip())
     return markdown_blocks
 
-markdown_text = \
-"""
-# This is a heading
 
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+def block_to_block_type(block: str):
+    lines = block.split("\n")
+    # Headings start with 1-6 # characters, followed by a space, then the heading text
+    if re.match(r"^#+\s", block):
+        return "heading"
+    # Code blocks must start with 3 backticks and end with 3 backticks
+    elif len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
+        return "code"
+    # Every line in a quote block must start with a > character
+    elif block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return "paragraph"
+        return "quote"
+    # every line in an unordered list block must start with a * or - character followed by a space
+    elif re.match(r"[*-]\s", block):
+        for idx, line in enumerate(lines):
+            if not re.match(r"[*-]\s", lines[idx]):
+                return "paragraph"
+        return "unordered_list"
+    # Every line in an ordered list block must start with a number followed by a . character and a space
+    elif re.match(r"\d+\.\s", block):
+        for idx, line in enumerate(lines):
+            if not re.match(r"\d+\.\s", lines[idx]):
+                return "paragraph"
+        return "ordered_list"
+    # If non of the above then it is a normal paragraph
+    else:
+        return "paragraph"
 
-* This is the first list item in a list block
-* This is a list item
-* This is another list item
-"""
+
 if __name__ == "__main__":
-    print(repr(markdown_text))
-    print(repr(markdown_text.split("\n\n")))
-    test = markdown_to_blocks(markdown_text)
-    for t in test:
-        print(repr(t))
-        print(t)
-        print()
+    code_block = "```\nx = 'Hello World\nprint(x)\n```"
+    value = block_to_block_type(code_block)
+    print(value)
